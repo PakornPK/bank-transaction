@@ -1,0 +1,80 @@
+openapi: 3.0.1
+info:
+  title: api bank-account
+  description: Bank account API
+  version: 1.0.0
+servers:
+- url: https://127.0.0.1:3000/api/v1
+- url: http://127.0.0.1:3000/api/v1
+tags:
+- name: wallet
+  description: Everything about your wallet
+paths:
+  /wallet/balance:
+    get:
+      tags:
+      - wallet
+      summary: Get Balance
+      responses:
+        "200":
+          description: Get Balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+    patch:
+      tags:
+      - wallet
+      summary: Deposit / Withdraw
+      requestBody:
+        description: balance
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    Wallet:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        type: 
+          type: string
+        amount:
+          type: number
+          format: float
+      example:
+        id: 0
+        type: "Deposit"
+        amount: 6.0274563
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      example:
+        code: 0
+        type: type
+        message: message
