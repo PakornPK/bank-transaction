@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: bank-transaction
+spec:
+  replicas: 1
+  selector:
+    name: bank-transaction
+  template: 
+    metadata:
+      labels:  
+        name: bank-transaction
+    spec:
+      containers:
+      - image: bank-transaction:latest
+        name: bank-transaction
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+      restartPolicy: Always   
+  triggers:
+  - type: ConfigChange 
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - bank-transaction
+      from:
+        kind: ImageStreamTag
+        name: bank-transaction:latest
+    type: ImageChange  
+  strategy:
+    type: Rolling 
