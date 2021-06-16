@@ -1,12 +1,19 @@
-FROM golang:1.16 AS build
-WORKDIR /go/src
-COPY . .
+FROM golang:1.16-buster as build
 
-RUN go get -d -v ./...
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLE=0
 
-RUN go build -o /out/bin ./cmd/bank-transaction.go
+RUN mkdir -p /workspace
+WORKDIR /workspace
+ADD go.mod go.sum ./
+RUN go mod download
+ADD . .
+RUN go build -o .build/bin -ldflags "-w -s" ./cmd/ 
 
-FROM scratch AS runtime
-COPY --from=build /out/bin ./
-EXPOSE 3000/tcp
-ENTRYPOINT ["./bin"]
+FROM gcr.io/distroless/base-debian10
+
+COPY --from=build /workspace/.build/* /
+
+EXPOSE 3000
+ENTRYPOINT [ "/bin" ]
